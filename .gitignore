@@ -1,0 +1,13 @@
+# elasticsearch data
+esdata/
+
+# environment variables
+.env
+
+# logs
+logs/
+
+# cache
+cache/
+
+# temp

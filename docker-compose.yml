@@ -1,0 +1,52 @@
+services:
+  esdata-init:
+    image: alpine:3.21
+    container_name: esdata-init
+    user: "0:0"
+    command: >
+      sh -c "mkdir -p /esdata &&
+             chown -R 1000:0 /esdata &&
+             chmod -R 0775 /esdata"
+    volumes:
+      - type: bind
+        source: ./esdata
+        target: /esdata
+        bind:
+          create_host_path: true
+    networks:
+      - elastic
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.19.11
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - type: bind
+        source: ./esdata
+        target: /usr/share/elasticsearch/data
+        bind:
+          create_host_path: true
+    depends_on:
+      esdata-init:
+        condition: service_completed_successfully
+    networks:
+      - elastic
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.19.11
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - elastic
+
+networks:
+  elastic:
