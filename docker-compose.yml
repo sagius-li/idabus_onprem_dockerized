@@ -21,7 +21,9 @@ services:
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
-      - xpack.security.enabled=false
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=false
+      - ELASTIC_PASSWORD=Elastic_Password_123!
     ports:
       - "9200:9200"
     volumes:
@@ -36,15 +38,39 @@ services:
     networks:
       - elastic
 
+  es-security-init:
+    image: curlimages/curl:8.12.1
+    container_name: es-security-init
+    environment:
+      - ELASTIC_PASSWORD=Elastic_Password_123!
+      - KIBANA_SYSTEM_PASSWORD=Kibana_System_Password_123!
+    command: >
+      sh -c 'until curl -fsS -u elastic:$$ELASTIC_PASSWORD http://elasticsearch:9200 >/dev/null; do
+      sleep 2; done;
+      curl -fsS -u elastic:$$ELASTIC_PASSWORD
+      -X POST http://elasticsearch:9200/_security/user/kibana_system/_password
+      -H "Content-Type: application/json"
+      -d "{\"password\":\"$$KIBANA_SYSTEM_PASSWORD\"}" >/dev/null'
+    depends_on:
+      - elasticsearch
+    networks:
+      - elastic
+
   kibana:
     image: docker.elastic.co/kibana/kibana:8.19.11
     container_name: kibana
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=Kibana_System_Password_123!
+      - XPACK_SECURITY_ENCRYPTIONKEY=6a6f5d55c71ebb5cb51814d8232d62a395a144f2dd0b03109d1c448ea9605fb4
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=0f57dff2680914cd3306989352b74a1f21eefa8cbd640fc48010f0e73776b0a8
+      - XPACK_REPORTING_ENCRYPTIONKEY=0c58f4b2e2e77633aeb85bf831f3f5f549177ea463fad73c16452cab9dd1ab14
     ports:
       - "5601:5601"
     depends_on:
-      - elasticsearch
+      es-security-init:
+        condition: service_completed_successfully
     networks:
       - elastic
 
