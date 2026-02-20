@@ -10,4 +10,11 @@ logs/
 # cache
 cache/
 
+# angular web
+portal/
+
+# nginx
+nginx/
+
 # temp
+.DS_Store

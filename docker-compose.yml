@@ -74,5 +74,22 @@ services:
     networks:
       - elastic
 
+  angular-web:
+    image: nginx:alpine
+    container_name: angular-web
+    ports:
+      - "8080:80"
+    volumes:
+      - type: bind
+        source: ./portal
+        target: /usr/share/nginx/html
+        read_only: true
+      - type: bind
+        source: ./nginx/angular.conf
+        target: /etc/nginx/conf.d/default.conf
+        read_only: true
+    networks:
+      - elastic
+
 networks:
   elastic:
