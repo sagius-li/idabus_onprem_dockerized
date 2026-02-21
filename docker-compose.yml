@@ -91,5 +91,23 @@ services:
     networks:
       - elastic
 
+  dataservice-api:
+    image: mcr.microsoft.com/dotnet/aspnet:10.0
+    container_name: dataservice-api
+    working_dir: /app
+    command: ["dotnet", "/app/DataService.dll"]
+    environment:
+      - ASPNETCORE_URLS=http://+:8090
+      - ASPNETCORE_ENVIRONMENT=Production
+    ports:
+      - "8090:8090"
+    volumes:
+      - type: bind
+        source: ./engine
+        target: /app
+        read_only: true
+    networks:
+      - elastic
+
 networks:
   elastic:

@@ -10,8 +10,11 @@ logs/
 # cache
 cache/
 
-# angular web
+# portal (angular web)
 portal/
+
+# engine (dot net api)
+engine/
 
 # nginx
 nginx/
