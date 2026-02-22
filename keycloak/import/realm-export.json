@@ -1,0 +1,78 @@
+{
+  "realm": "idabus",
+  "enabled": true,
+  "displayName": "Idabus Local Realm",
+  "roles": {
+    "realm": [
+      {
+        "name": "user",
+        "description": "Standard application user"
+      },
+      {
+        "name": "admin",
+        "description": "Application administrator"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "idabus-portal",
+      "name": "Idabus Portal SPA",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": ["http://localhost:8080/*"],
+      "webOrigins": ["http://localhost:8080"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      }
+    },
+    {
+      "clientId": "dataservice-api",
+      "name": "DataService API",
+      "enabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "serviceAccountsEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "secret": "ChangeMe_DataService_Client_Secret_123!"
+    }
+  ],
+  "users": [
+    {
+      "username": "portal.user",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Portal",
+      "lastName": "User",
+      "email": "portal.user@example.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Keycloak_Password_123!",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["user"]
+    },
+    {
+      "username": "portal.admin",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Portal",
+      "lastName": "Admin",
+      "email": "portal.admin@example.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Keycloak_Password_123!",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["user", "admin"]
+    }
+  ]
+}

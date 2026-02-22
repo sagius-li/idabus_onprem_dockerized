@@ -19,5 +19,8 @@ engine/
 # nginx
 nginx/
 
+# keycloak runtime data
+keycloak/data/
+
 # temp
 .DS_Store
