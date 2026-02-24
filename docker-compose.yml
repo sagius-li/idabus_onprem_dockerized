@@ -74,9 +74,9 @@ services:
     networks:
       - elastic
 
-  angular-web:
+  idabus-portal:
     image: nginx:alpine
-    container_name: angular-web
+    container_name: idabus-portal
     ports:
       - "8080:80"
     volumes:
@@ -91,9 +91,9 @@ services:
     networks:
       - elastic
 
-  dataservice-api:
+  idabus-engine:
     image: mcr.microsoft.com/dotnet/aspnet:10.0
-    container_name: dataservice-api
+    container_name: idabus-engine
     working_dir: /app
     command: ["dotnet", "/app/DataService.dll"]
     environment:

@@ -38,8 +38,8 @@ No automated test suite is defined yet in this repository. Validate changes with
 - Start the stack: `docker compose up -d`
 - Verify Elasticsearch: `curl http://localhost:9200`
 - Verify Kibana UI: open `http://localhost:5601`
-- Verify Angular UI: open `http://localhost:8080`
-- Verify DataService API: open `http://localhost:8090/swagger`
+- Verify IDABUS Portal: open `http://localhost:8080`
+- Verify IDABUS Engine: open `http://localhost:8090/swagger`
 - Verify Keycloak UI: open `http://localhost:8180`
 
 When scripts or application code are introduced, add corresponding tests under `tests/` and document the command to run them here.

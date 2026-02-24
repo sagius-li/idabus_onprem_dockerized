@@ -16,29 +16,26 @@
   },
   "clients": [
     {
-      "clientId": "idabus-portal",
-      "name": "Idabus Portal SPA",
+      "clientId": "idabus-app",
+      "name": "Idabus App",
       "enabled": true,
       "publicClient": true,
       "protocol": "openid-connect",
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": false,
-      "redirectUris": ["http://localhost:8080/*"],
-      "webOrigins": ["http://localhost:8080"],
+      "redirectUris": [
+        "http://localhost:8080/*",
+        "http://localhost:8090/*",
+        "http://localhost:4200/*"
+      ],
+      "webOrigins": [
+        "http://localhost:8080",
+        "http://localhost:8090",
+        "http://localhost:4200"
+      ],
       "attributes": {
         "pkce.code.challenge.method": "S256"
       }
-    },
-    {
-      "clientId": "dataservice-api",
-      "name": "DataService API",
-      "enabled": true,
-      "publicClient": false,
-      "protocol": "openid-connect",
-      "standardFlowEnabled": false,
-      "serviceAccountsEnabled": true,
-      "directAccessGrantsEnabled": true,
-      "secret": "ChangeMe_DataService_Client_Secret_123!"
     }
   ],
   "users": [
