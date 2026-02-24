@@ -18,6 +18,7 @@ Use Docker Compose as the primary development workflow.
 - `docker compose ps`: Check service status and container health.
 - `esdata-init` is a one-shot setup container and should normally show `Exited (0)` after applying directory permissions.
 - `es-security-init` is a one-shot setup container and should normally show `Exited (0)` after setting the `kibana_system` password.
+- `es-index-init` is a one-shot setup container and should normally show `Exited (0)` after ensuring required Elasticsearch indices exist.
 - `docker compose logs -f elasticsearch kibana`: Stream logs for troubleshooting startup/connectivity.
 - `docker compose down`: Stop and remove containers and network.
 - `docker compose down -v`: Stop everything and remove volumes (deletes local Elasticsearch data).

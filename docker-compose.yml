@@ -56,6 +56,34 @@ services:
     networks:
       - elastic
 
+  es-index-init:
+    image: curlimages/curl:8.12.1
+    container_name: es-index-init
+    environment:
+      - ELASTIC_PASSWORD=Elastic_Password_123!
+    command: >
+      sh -c 'set -eu;
+      until curl -fsS -u elastic:$$ELASTIC_PASSWORD http://elasticsearch:9200 >/dev/null; do
+      sleep 2; done;
+      for index in events eventsarchive resources workflowexecution; do
+      status=$$(curl -s -o /dev/null -w "%{http_code}" -u elastic:$$ELASTIC_PASSWORD -I http://elasticsearch:9200/$$index);
+      if [ "$$status" = "200" ]; then
+      echo "Index $$index already exists; skipping";
+      elif [ "$$status" = "404" ]; then
+      echo "Creating index $$index";
+      create_status=$$(curl -s -o /dev/null -w "%{http_code}" -u elastic:$$ELASTIC_PASSWORD -X PUT http://elasticsearch:9200/$$index);
+      if [ "$$create_status" != "200" ] && [ "$$create_status" != "201" ]; then
+      echo "Failed creating index $$index (status=$$create_status)" >&2; exit 1; fi;
+      else
+      echo "Unexpected status $$status while checking index $$index" >&2; exit 1;
+      fi;
+      done'
+    depends_on:
+      es-security-init:
+        condition: service_completed_successfully
+    networks:
+      - elastic
+
   kibana:
     image: docker.elastic.co/kibana/kibana:8.19.11
     container_name: kibana
@@ -106,6 +134,9 @@ services:
         source: ./engine
         target: /app
         read_only: true
+    depends_on:
+      es-index-init:
+        condition: service_completed_successfully
     networks:
       - elastic
 
