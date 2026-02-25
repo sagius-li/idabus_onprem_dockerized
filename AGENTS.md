@@ -12,12 +12,16 @@ This repository is currently infrastructure-focused and centered on `docker-comp
 - `kibana (docker.elastic.co/kibana/kibana:8.19.11)`: Kibana UI for Elasticsearch.
 - `idabus-portal (nginx:alpine)`: Static hosting for portal assets.
 - `idabus-engine (mcr.microsoft.com/dotnet/aspnet:10.0)`: DataService API runtime container.
+- `sqlserver (mcr.microsoft.com/mssql/server:2022-latest)`: Local Microsoft SQL Server container for development/testing.
 - `keycloak (quay.io/keycloak/keycloak:26.0)`: Identity and realm/auth provider.
 
 ## Mount Settings
 
 - `./esdata -> /esdata` in `esdata-init`: Bootstrap permissions target.
 - `./esdata -> /usr/share/elasticsearch/data`: Elasticsearch persistent data.
+- `./scripts -> /scripts` in `es-security-init` (read-only): Mounts init script files.
+- `./scripts -> /scripts` in `es-index-init` (read-only): Mounts index bootstrap script files.
+- `./sqldata -> /var/opt/mssql`: SQL Server persistent data.
 - `./keycloak/data -> /opt/keycloak/data`: Keycloak persistent data.
 - `./keycloak/import -> /opt/keycloak/data/import` (read-only): Realm import files.
 - `./nginx/angular.conf -> /etc/nginx/conf.d/default.conf` (read-only): Nginx config.
@@ -25,6 +29,11 @@ This repository is currently infrastructure-focused and centered on `docker-comp
 - `./engine -> /app` (read-only): DataService runtime files.
 
 If new app code is added, keep it in clear top-level folders such as `src/`, `tests/`, and `docs/` to maintain separation from deployment assets.
+
+## Scripts
+
+- `scripts/es-security-init.sh`: Waits for Elasticsearch and sets the `kibana_system` password.
+- `scripts/es-index-init.sh`: Waits for Elasticsearch, checks required indices, and creates missing indices with configured settings/mappings.
 
 ## Build, Test, and Development Commands
 
@@ -34,6 +43,8 @@ Use Docker Compose as the primary development workflow.
 - `docker compose up -d`: Start the full local stack in the background.
 - `docker compose ps`: Check service status and container health.
 - `docker compose logs -f elasticsearch kibana`: Stream logs for troubleshooting startup/connectivity.
+- `docker compose up -d sqlserver`: Start SQL Server only.
+- `docker compose logs -f sqlserver`: Stream SQL Server logs during startup and troubleshooting.
 - `docker compose down`: Stop and remove containers and network.
 - `docker compose down -v`: Stop everything and remove volumes (deletes local Elasticsearch data).
 - `docker compose down -v --rmi all`: clean up everything (containers, images, networks, volumes), do not use this unless specifically stated.
@@ -56,6 +67,7 @@ No automated test suite is defined yet in this repository. Validate changes with
 - Verify IDABUS Portal: open `http://localhost:8080`
 - Verify IDABUS Engine: open `http://localhost:8090/swagger`
 - Verify Keycloak UI: open `http://localhost:8180`
+- Verify SQL Server port: `nc -zv localhost 1433` (or connect with a SQL client using `localhost,1433`)
 
 When scripts or application code are introduced, add corresponding tests under `tests/` and document the command to run them here.
 

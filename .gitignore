@@ -1,6 +1,9 @@
 # elasticsearch data
 esdata/
 
+# sql server data
+sqldata/
+
 # environment variables
 .env
 
