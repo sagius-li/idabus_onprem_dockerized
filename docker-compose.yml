@@ -23,7 +23,7 @@ services:
       - discovery.type=single-node
       - xpack.security.enabled=true
       - xpack.security.http.ssl.enabled=false
-      - ELASTIC_PASSWORD=Elastic_Password_123!
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     ports:
       - "9200:9200"
     volumes:
@@ -42,8 +42,8 @@ services:
     image: curlimages/curl:8.12.1
     container_name: es-security-init
     environment:
-      - ELASTIC_PASSWORD=Elastic_Password_123!
-      - KIBANA_SYSTEM_PASSWORD=Kibana_System_Password_123!
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - KIBANA_SYSTEM_PASSWORD=${KIBANA_SYSTEM_PASSWORD}
     command: ["sh", "/scripts/es-security-init.sh"]
     volumes:
       - type: bind
@@ -59,7 +59,7 @@ services:
     image: curlimages/curl:8.12.1
     container_name: es-index-init
     environment:
-      - ELASTIC_PASSWORD=Elastic_Password_123!
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     command: ["sh", "/scripts/es-index-init.sh"]
     volumes:
       - type: bind
@@ -78,7 +78,7 @@ services:
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - ELASTICSEARCH_USERNAME=kibana_system
-      - ELASTICSEARCH_PASSWORD=Kibana_System_Password_123!
+      - ELASTICSEARCH_PASSWORD=${KIBANA_SYSTEM_PASSWORD}
       - XPACK_SECURITY_ENCRYPTIONKEY=6a6f5d55c71ebb5cb51814d8232d62a395a144f2dd0b03109d1c448ea9605fb4
       - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=0f57dff2680914cd3306989352b74a1f21eefa8cbd640fc48010f0e73776b0a8
       - XPACK_REPORTING_ENCRYPTIONKEY=0c58f4b2e2e77633aeb85bf831f3f5f549177ea463fad73c16452cab9dd1ab14
@@ -153,7 +153,7 @@ services:
     command: ["start-dev", "--import-realm"]
     environment:
       - KC_BOOTSTRAP_ADMIN_USERNAME=admin
-      - KC_BOOTSTRAP_ADMIN_PASSWORD=Keycloak_Password_123!
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=${KC_BOOTSTRAP_ADMIN_PASSWORD}
       - KC_HTTP_PORT=8080
     ports:
       - "8180:8080"
