@@ -125,6 +125,8 @@ services:
     depends_on:
       es-index-init:
         condition: service_completed_successfully
+      sqlserver:
+        condition: service_started
     networks:
       - elastic
 
@@ -132,6 +134,7 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     platform: linux/amd64
     container_name: sqlserver
+    command: ["/bin/bash", "/scripts/sqlserver-init.sh"]
     environment:
       - ACCEPT_EULA=Y
       - MSSQL_PID=Developer
@@ -139,6 +142,10 @@ services:
     ports:
       - "1433:1433"
     volumes:
+      - type: bind
+        source: ./scripts
+        target: /scripts
+        read_only: true
       - type: bind
         source: ./sqldata
         target: /var/opt/mssql
