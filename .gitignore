@@ -24,6 +24,7 @@ nginx/
 
 # keycloak runtime data
 keycloak/data/
+keycloak/certs/
 
 # temp
 .DS_Store

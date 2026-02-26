@@ -25,13 +25,19 @@
       "directAccessGrantsEnabled": false,
       "redirectUris": [
         "http://localhost:8080/*",
+        "https://localhost:8080/*",
         "http://localhost:8090/*",
-        "http://localhost:4200/*"
+        "https://localhost:8090/*",
+        "http://localhost:4200/*",
+        "https://localhost:4200/*"
       ],
       "webOrigins": [
         "http://localhost:8080",
+        "https://localhost:8080",
         "http://localhost:8090",
-        "http://localhost:4200"
+        "https://localhost:8090",
+        "http://localhost:4200",
+        "https://localhost:4200"
       ],
       "attributes": {
         "pkce.code.challenge.method": "S256"
@@ -40,12 +46,12 @@
   ],
   "users": [
     {
-      "username": "portal.user",
+      "username": "idabus.user",
       "enabled": true,
       "emailVerified": true,
-      "firstName": "Portal",
+      "firstName": "Idabus",
       "lastName": "User",
-      "email": "portal.user@example.local",
+      "email": "idabus.user@example.local",
       "credentials": [
         {
           "type": "password",
@@ -56,12 +62,12 @@
       "realmRoles": ["user"]
     },
     {
-      "username": "portal.admin",
+      "username": "idabus.admin",
       "enabled": true,
       "emailVerified": true,
-      "firstName": "Portal",
+      "firstName": "Idabus",
       "lastName": "Admin",
-      "email": "portal.admin@example.local",
+      "email": "idabus.admin@example.local",
       "credentials": [
         {
           "type": "password",

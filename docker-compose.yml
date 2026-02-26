@@ -6,9 +6,13 @@ services:
     environment:
       - KC_BOOTSTRAP_ADMIN_USERNAME=admin
       - KC_BOOTSTRAP_ADMIN_PASSWORD=${KC_BOOTSTRAP_ADMIN_PASSWORD}
-      - KC_HTTP_PORT=8080
+      - KC_HTTP_ENABLED=false
+      - KC_HTTPS_PORT=8443
+      - KC_HTTPS_CERTIFICATE_FILE=/opt/keycloak/certs/tls.crt
+      - KC_HTTPS_CERTIFICATE_KEY_FILE=/opt/keycloak/certs/tls.key
+      - KC_HOSTNAME=https://localhost:8443
     ports:
-      - "8180:8080"
+      - "8443:8443"
     volumes:
       - type: bind
         source: ./keycloak/import
@@ -17,6 +21,10 @@ services:
       - type: bind
         source: ./keycloak/data
         target: /opt/keycloak/data
+      - type: bind
+        source: ./keycloak/certs
+        target: /opt/keycloak/certs
+        read_only: true
     networks:
       - elastic
 

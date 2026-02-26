@@ -66,7 +66,7 @@ No automated test suite is defined yet in this repository. Validate changes with
 - Start the stack: `docker compose up -d`
 - Verify Elasticsearch: `curl http://localhost:9200`
 - Verify Kibana UI: open `http://localhost:5601`
-- Verify Keycloak UI: open `http://localhost:8180`
+- Verify Keycloak UI: open `https://localhost:8443`
 - Verify SQL Server port: `nc -zv localhost 1433` (or connect with a SQL client using `localhost,1433`)
 - Verify IDABUS Engine: open `http://localhost:8090/swagger`
 - Verify IDABUS Portal: open `http://localhost:8080`
