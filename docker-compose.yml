@@ -1,4 +1,25 @@
 services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: keycloak
+    command: ["start-dev", "--import-realm"]
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=${KC_BOOTSTRAP_ADMIN_PASSWORD}
+      - KC_HTTP_PORT=8080
+    ports:
+      - "8180:8080"
+    volumes:
+      - type: bind
+        source: ./keycloak/import
+        target: /opt/keycloak/data/import
+        read_only: true
+      - type: bind
+        source: ./keycloak/data
+        target: /opt/keycloak/data
+    networks:
+      - elastic
+
   esdata-init:
     image: alpine:3.21
     container_name: esdata-init
@@ -90,6 +111,49 @@ services:
     networks:
       - elastic
 
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
+    container_name: sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_PID=Developer
+      - SA_PASSWORD=${SA_PASSWORD}
+    ports:
+      - "1433:1433"
+    volumes:
+      - type: bind
+        source: ./scripts
+        target: /scripts
+        read_only: true
+      - type: bind
+        source: ./sqldata
+        target: /var/opt/mssql
+        bind:
+          create_host_path: true
+    networks:
+      - elastic
+
+  sqlserver-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
+    container_name: sqlserver-init
+    command: ["/bin/bash", "/scripts/sqlserver-init.sh"]
+    environment:
+      - SA_PASSWORD=${SA_PASSWORD}
+      - SQLSERVER_HOST=sqlserver
+      - SQLSERVER_PORT=1433
+    volumes:
+      - type: bind
+        source: ./scripts
+        target: /scripts
+        read_only: true
+    depends_on:
+      sqlserver:
+        condition: service_started
+    networks:
+      - elastic
+
   idabus-portal:
     image: nginx:alpine
     container_name: idabus-portal
@@ -125,53 +189,8 @@ services:
     depends_on:
       es-index-init:
         condition: service_completed_successfully
-      sqlserver:
-        condition: service_started
-    networks:
-      - elastic
-
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    platform: linux/amd64
-    container_name: sqlserver
-    command: ["/bin/bash", "/scripts/sqlserver-init.sh"]
-    environment:
-      - ACCEPT_EULA=Y
-      - MSSQL_PID=Developer
-      - SA_PASSWORD=${SA_PASSWORD}
-    ports:
-      - "1433:1433"
-    volumes:
-      - type: bind
-        source: ./scripts
-        target: /scripts
-        read_only: true
-      - type: bind
-        source: ./sqldata
-        target: /var/opt/mssql
-        bind:
-          create_host_path: true
-    networks:
-      - elastic
-
-  keycloak:
-    image: quay.io/keycloak/keycloak:26.0
-    container_name: keycloak
-    command: ["start-dev", "--import-realm"]
-    environment:
-      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
-      - KC_BOOTSTRAP_ADMIN_PASSWORD=${KC_BOOTSTRAP_ADMIN_PASSWORD}
-      - KC_HTTP_PORT=8080
-    ports:
-      - "8180:8080"
-    volumes:
-      - type: bind
-        source: ./keycloak/import
-        target: /opt/keycloak/data/import
-        read_only: true
-      - type: bind
-        source: ./keycloak/data
-        target: /opt/keycloak/data
+      sqlserver-init:
+        condition: service_completed_successfully
     networks:
       - elastic
 

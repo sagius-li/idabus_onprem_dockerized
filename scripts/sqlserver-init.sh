@@ -2,34 +2,30 @@
 set -eu
 
 SQLCMD_BIN="/opt/mssql-tools18/bin/sqlcmd"
-SQLSERVER_BIN="/opt/mssql/bin/sqlservr"
 SA_USER="sa"
 DB_NAME="IdabusIdentitySolution"
 TABLE_NAMES="Resources Events EventsArchive WorkflowExecutions"
+SQLSERVER_HOST="${SQLSERVER_HOST:-sqlserver}"
+SQLSERVER_PORT="${SQLSERVER_PORT:-1433}"
+MAX_RETRIES="${MAX_RETRIES:-90}"
+SLEEP_SECONDS="${SLEEP_SECONDS:-2}"
 
-shutdown() {
-  if kill -0 "$SQL_PID" >/dev/null 2>&1; then
-    kill -TERM "$SQL_PID"
-    wait "$SQL_PID"
+echo "Waiting for SQL Server at ${SQLSERVER_HOST}:${SQLSERVER_PORT} to accept connections..."
+retry=1
+until "$SQLCMD_BIN" -S "${SQLSERVER_HOST},${SQLSERVER_PORT}" -U "$SA_USER" -P "$SA_PASSWORD" -C -Q "SELECT 1" >/dev/null 2>&1; do
+  if [ "$retry" -ge "$MAX_RETRIES" ]; then
+    echo "SQL Server did not become ready after $((MAX_RETRIES * SLEEP_SECONDS)) seconds." >&2
+    exit 1
   fi
-}
-
-trap shutdown INT TERM
-
-# Start SQL Server because the compose command overrides image defaults.
-echo "Starting SQL Server..."
-"$SQLSERVER_BIN" &
-SQL_PID=$!
-
-echo "Waiting for SQL Server to accept connections..."
-until "$SQLCMD_BIN" -S localhost -U "$SA_USER" -P "$SA_PASSWORD" -C -Q "SELECT 1" >/dev/null 2>&1; do
-  sleep 2
+  echo "SQL Server not ready yet (attempt ${retry}/${MAX_RETRIES}), retrying in ${SLEEP_SECONDS}s..."
+  retry=$((retry + 1))
+  sleep "$SLEEP_SECONDS"
 done
 
 echo "Ensuring database [$DB_NAME] exists..."
-"$SQLCMD_BIN" -S localhost -U "$SA_USER" -P "$SA_PASSWORD" -C -Q "IF DB_ID(N'$DB_NAME') IS NULL CREATE DATABASE [$DB_NAME];"
+"$SQLCMD_BIN" -S "${SQLSERVER_HOST},${SQLSERVER_PORT}" -U "$SA_USER" -P "$SA_PASSWORD" -C -Q "IF DB_ID(N'$DB_NAME') IS NULL CREATE DATABASE [$DB_NAME];"
 
-DB_EXISTS=$("$SQLCMD_BIN" -S localhost -U "$SA_USER" -P "$SA_PASSWORD" -C -h -1 -W -Q "SET NOCOUNT ON; SELECT CASE WHEN DB_ID(N'$DB_NAME') IS NULL THEN 0 ELSE 1 END;")
+DB_EXISTS=$("$SQLCMD_BIN" -S "${SQLSERVER_HOST},${SQLSERVER_PORT}" -U "$SA_USER" -P "$SA_PASSWORD" -C -h -1 -W -Q "SET NOCOUNT ON; SELECT CASE WHEN DB_ID(N'$DB_NAME') IS NULL THEN 0 ELSE 1 END;")
 if [ "$DB_EXISTS" != "1" ]; then
   echo "Failed to ensure database [$DB_NAME]." >&2
   exit 1
@@ -37,11 +33,11 @@ fi
 echo "Database [$DB_NAME] is ready."
 
 echo "Ensuring READ_COMMITTED_SNAPSHOT is enabled..."
-"$SQLCMD_BIN" -S localhost -U "$SA_USER" -P "$SA_PASSWORD" -C -Q "IF EXISTS (SELECT 1 FROM sys.databases WHERE name = N'$DB_NAME' AND is_read_committed_snapshot_on = 0) ALTER DATABASE [$DB_NAME] SET READ_COMMITTED_SNAPSHOT ON;"
+"$SQLCMD_BIN" -S "${SQLSERVER_HOST},${SQLSERVER_PORT}" -U "$SA_USER" -P "$SA_PASSWORD" -C -Q "IF EXISTS (SELECT 1 FROM sys.databases WHERE name = N'$DB_NAME' AND is_read_committed_snapshot_on = 0) ALTER DATABASE [$DB_NAME] SET READ_COMMITTED_SNAPSHOT ON;"
 
 for table_name in $TABLE_NAMES; do
   echo "Ensuring table [$table_name] and indexes exist..."
-  "$SQLCMD_BIN" -S localhost -U "$SA_USER" -P "$SA_PASSWORD" -C -Q "
+  "$SQLCMD_BIN" -S "${SQLSERVER_HOST},${SQLSERVER_PORT}" -U "$SA_USER" -P "$SA_PASSWORD" -C -Q "
 USE [$DB_NAME];
 IF OBJECT_ID(N'dbo.[$table_name]', N'U') IS NULL
 BEGIN
@@ -80,5 +76,3 @@ END;
 done
 
 echo "SQL bootstrap completed successfully."
-
-wait "$SQL_PID"

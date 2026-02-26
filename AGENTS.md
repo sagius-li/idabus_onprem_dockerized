@@ -8,6 +8,7 @@ This repository is currently infrastructure-focused and centered on `docker-comp
 - `docker-compose.yml`: Defines the local stack, networking, ports, and container/runtime wiring.
 - `scripts/es-security-init.sh`: Waits for Elasticsearch and sets the `kibana_system` password.
 - `scripts/es-index-init.sh`: Waits for Elasticsearch, checks required indices, and creates missing indices with configured settings/mappings.
+- `scripts/sqlserver-init.sh`: Waits for SQL Server, ensures the `IdabusIdentitySolution` database, required tables, and required indexes exist.
 
 ## Containers
 
@@ -19,6 +20,7 @@ This repository is currently infrastructure-focused and centered on `docker-comp
 - `idabus-portal (nginx:alpine)`: Static hosting for portal assets.
 - `idabus-engine (mcr.microsoft.com/dotnet/aspnet:10.0)`: DataService API runtime container.
 - `sqlserver (mcr.microsoft.com/mssql/server:2022-latest)`: Local Microsoft SQL Server container for development/testing.
+- `sqlserver-init (mcr.microsoft.com/mssql/server:2022-latest)`: One-shot SQL bootstrap service that waits for SQL Server and ensures DB/table/index readiness.
 - `keycloak (quay.io/keycloak/keycloak:26.0)`: Identity and realm/auth provider.
 
 ## Mount Settings
@@ -27,6 +29,7 @@ This repository is currently infrastructure-focused and centered on `docker-comp
 - `./esdata -> /usr/share/elasticsearch/data`: Elasticsearch persistent data.
 - `./scripts -> /scripts` in `es-security-init` (read-only): Mounts init script files.
 - `./scripts -> /scripts` in `es-index-init` (read-only): Mounts index bootstrap script files.
+- `./scripts -> /scripts` in `sqlserver-init` (read-only): Mounts SQL bootstrap script files.
 - `./sqldata -> /var/opt/mssql`: SQL Server persistent data.
 - `./keycloak/data -> /opt/keycloak/data`: Keycloak persistent data.
 - `./keycloak/import -> /opt/keycloak/data/import` (read-only): Realm import files.
@@ -40,12 +43,10 @@ If new app code is added, keep it in clear top-level folders such as `src/`, `te
 
 Use Docker Compose as the primary development workflow.
 
-- `docker compose up -d <service-name>`: Start specified services in the background.
 - `docker compose up -d`: Start the full local stack in the background.
 - `docker compose ps`: Check service status and container health.
-- `docker compose logs -f elasticsearch kibana`: Stream logs for troubleshooting startup/connectivity.
-- `docker compose up -d sqlserver`: Start SQL Server only.
-- `docker compose logs -f sqlserver`: Stream SQL Server logs during startup and troubleshooting.
+- `docker compose up -d [service-name|...]`: Start specified services in the background.
+- `docker compose logs -f [service-name|...]`: Stream logs of services for troubleshooting.
 - `docker compose down`: Stop and remove containers and network.
 - `docker compose down -v`: Stop everything and remove volumes (deletes local Elasticsearch data).
 - `docker compose down -v --rmi all`: clean up everything (containers, images, networks, volumes), do not use this unless specifically stated.
@@ -74,10 +75,11 @@ When scripts or application code are introduced, add corresponding tests under `
 
 ## Commit & Pull Request Guidelines
 
-Git history is not available in this workspace, so adopt a clear convention now:
+Git history is available in this repository. Follow the existing commit style for consistency.
 
-- Commit format: `type(scope): summary` (for example, `chore(compose): pin elastic image versions`)
+- Commit subject style: concise lowercase phrase (for example, `added sql server bootstrap`, `updated agents.md`).
 - Keep commits focused on one logical change.
+- Avoid noisy WIP commit messages in shared history; squash/fixup before merge when needed.
 - PRs should include: purpose, key changes, verification steps, and any config or data-impact notes.
 - Include screenshots only for UI changes (for example, Kibana dashboards).
 
