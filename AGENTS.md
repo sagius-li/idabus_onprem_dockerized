@@ -4,7 +4,9 @@
 
 This repository is currently infrastructure-focused and centered on `docker-compose.yml`.
 
-- `.env`: Holds all passwords.
+- `.env`: Holds all passwords, this file is not tracked by git, DO NOT delete it!
+- `config/`: Contains configuration files used for containers.
+- `localfiles`: Contains important files which cannot be tracked by git because of security. DO NOT delete it!
 - `docker-compose.yml`: Defines the local stack, networking, ports, and container/runtime wiring.
 - `scripts/es-security-init.sh`: Waits for Elasticsearch and sets the `kibana_system` password.
 - `scripts/es-index-init.sh`: Waits for Elasticsearch, checks required indices, and creates missing indices with configured settings/mappings.
@@ -32,7 +34,9 @@ This repository is currently infrastructure-focused and centered on `docker-comp
 - `./scripts -> /scripts` in `sqlserver-init` (read-only): Mounts SQL bootstrap script files.
 - `./sqldata -> /var/opt/mssql`: SQL Server persistent data.
 - `./keycloak/data -> /opt/keycloak/data`: Keycloak persistent data.
-- `./keycloak/import -> /opt/keycloak/data/import` (read-only): Realm import files.
+- `./config/keycloak -> /opt/keycloak/data/import` (read-only): Realm import files.
+- `./config/keycloak -> /opt/keycloak/certs` (read-only): TLS certificate files.
+- `./localfiles/keycloak -> /opt/keycloak/private` (read-only): TLS private key directory (`tls.key`).
 - `./nginx/angular.conf -> /etc/nginx/conf.d/default.conf` (read-only): Nginx config.
 - `./portal -> /usr/share/nginx/html` (read-only): Portal static files.
 - `./engine -> /app` (read-only): DataService runtime files.

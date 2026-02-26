@@ -9,21 +9,25 @@ services:
       - KC_HTTP_ENABLED=false
       - KC_HTTPS_PORT=8443
       - KC_HTTPS_CERTIFICATE_FILE=/opt/keycloak/certs/tls.crt
-      - KC_HTTPS_CERTIFICATE_KEY_FILE=/opt/keycloak/certs/tls.key
+      - KC_HTTPS_CERTIFICATE_KEY_FILE=/opt/keycloak/private/tls.key
       - KC_HOSTNAME=https://localhost:8443
     ports:
       - "8443:8443"
     volumes:
       - type: bind
-        source: ./keycloak/import
+        source: ./config/keycloak
         target: /opt/keycloak/data/import
         read_only: true
       - type: bind
         source: ./keycloak/data
         target: /opt/keycloak/data
       - type: bind
-        source: ./keycloak/certs
+        source: ./config/keycloak
         target: /opt/keycloak/certs
+        read_only: true
+      - type: bind
+        source: ./localfiles/keycloak
+        target: /opt/keycloak/private
         read_only: true
     networks:
       - elastic

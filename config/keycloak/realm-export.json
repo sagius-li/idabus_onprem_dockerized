@@ -55,7 +55,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "Keycloak_Password_123!",
+          "value": "Idabus_Password_123!",
           "temporary": false
         }
       ],
@@ -71,7 +71,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "Keycloak_Password_123!",
+          "value": "Idabus_Password_123!",
           "temporary": false
         }
       ],
