@@ -47,7 +47,8 @@ If new app code is added, keep it in clear top-level folders such as `src/`, `te
 
 Use Docker Compose as the primary development workflow.
 
-- `docker compose up -d`: Start the full local stack in the background.
+- `docker compose up -d`: Start the environment local stack in the background.
+- `docker compose --profile app up -d`: Start the full local stack including idabus engine and portal in the background.
 - `docker compose ps`: Check service status and container health.
 - `docker compose up -d [service-name|...]`: Start specified services in the background.
 - `docker compose logs -f [service-name|...]`: Stream logs of services for troubleshooting.
@@ -67,7 +68,8 @@ For YAML and infra files:
 
 No automated test suite is defined yet in this repository. Validate changes with runtime checks:
 
-- Start the stack: `docker compose up -d`
+- Start the environment stack: `docker compose up -d`
+- Start the full stack including engine and app: `docker compose --profile app up -d`
 - Verify Elasticsearch: `curl http://localhost:9200`
 - Verify Kibana UI: open `http://localhost:5601`
 - Verify Keycloak UI: open `https://localhost:8443`

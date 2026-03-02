@@ -5,7 +5,7 @@ until curl -fsS -u elastic:"$ELASTIC_PASSWORD" http://elasticsearch:9200 >/dev/n
   sleep 2
 done
 
-for index in events eventsarchive resources workflowexecution; do
+for index in events eventsarchive resources workflowexecutions; do
   status=$(curl -s -o /dev/null -w "%{http_code}" -u elastic:"$ELASTIC_PASSWORD" -I "http://elasticsearch:9200/$index")
 
   if [ "$status" = "200" ]; then

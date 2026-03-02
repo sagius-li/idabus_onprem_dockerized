@@ -50,7 +50,7 @@ services:
       - elastic
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.19.11
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.3.1
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
@@ -68,6 +68,12 @@ services:
     depends_on:
       esdata-init:
         condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -u elastic:$${ELASTIC_PASSWORD} http://localhost:9200 >/dev/null || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
     networks:
       - elastic
 
@@ -84,7 +90,8 @@ services:
         target: /scripts
         read_only: true
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
     networks:
       - elastic
 
@@ -167,6 +174,7 @@ services:
       - elastic
 
   idabus-portal:
+    profiles: ["app"]
     image: nginx:alpine
     container_name: idabus-portal
     ports:
@@ -184,6 +192,7 @@ services:
       - elastic
 
   idabus-engine:
+    profiles: ["app"]
     image: mcr.microsoft.com/dotnet/aspnet:10.0
     container_name: idabus-engine
     working_dir: /app
