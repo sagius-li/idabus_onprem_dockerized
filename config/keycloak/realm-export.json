@@ -65,7 +65,7 @@
       "emailVerified": true,
       "firstName": "Idabus",
       "lastName": "User",
-      "email": "idabus.user@example.local",
+      "email": "idabus.user@idabus.local",
       "credentials": [
         {
           "type": "password",
@@ -76,12 +76,13 @@
       "realmRoles": ["user"]
     },
     {
+      "id": "f4023ee6-39c1-4705-be4d-4e664381b305",
       "username": "idabus.admin",
       "enabled": true,
       "emailVerified": true,
       "firstName": "Idabus",
       "lastName": "Admin",
-      "email": "idabus.admin@example.local",
+      "email": "idabus.admin@idabus.local",
       "credentials": [
         {
           "type": "password",

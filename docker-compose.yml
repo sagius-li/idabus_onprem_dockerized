@@ -11,6 +11,8 @@ services:
       - KC_HTTPS_CERTIFICATE_FILE=/opt/keycloak/certs/tls.crt
       - KC_HTTPS_CERTIFICATE_KEY_FILE=/opt/keycloak/private/tls.key
       - KC_HOSTNAME=https://localhost:8443
+      - KC_HOSTNAME_BACKCHANNEL_DYNAMIC=true
+      - KC_HOSTNAME_STRICT=true
     ports:
       - "8443:8443"
     volumes:
@@ -69,7 +71,11 @@ services:
       esdata-init:
         condition: service_completed_successfully
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS -u elastic:$${ELASTIC_PASSWORD} http://localhost:9200 >/dev/null || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fsS -u elastic:$${ELASTIC_PASSWORD} http://localhost:9200 >/dev/null || exit 1",
+        ]
       interval: 5s
       timeout: 3s
       retries: 20
@@ -174,7 +180,6 @@ services:
       - elastic
 
   idabus-portal:
-    profiles: ["app"]
     image: nginx:alpine
     container_name: idabus-portal
     ports:
@@ -192,7 +197,6 @@ services:
       - elastic
 
   idabus-engine:
-    profiles: ["app"]
     image: mcr.microsoft.com/dotnet/aspnet:10.0
     container_name: idabus-engine
     working_dir: /app
