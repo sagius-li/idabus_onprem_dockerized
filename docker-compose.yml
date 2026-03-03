@@ -151,11 +151,16 @@ services:
         source: ./scripts
         target: /scripts
         read_only: true
+      # use bind mount for linux/macOS
       - type: bind
         source: ./sqldata
         target: /var/opt/mssql
         bind:
           create_host_path: true
+      # use named mount for windows
+      # - type: volume
+      #   source: sqldata
+      #   target: /var/opt/mssql
     networks:
       - elastic
 
@@ -218,6 +223,10 @@ services:
         condition: service_completed_successfully
     networks:
       - elastic
+
+# uncomment this for named volume on windows
+# volumes:
+#   sqldata:
 
 networks:
   elastic:
