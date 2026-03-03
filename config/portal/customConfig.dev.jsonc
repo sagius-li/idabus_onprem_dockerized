@@ -1,0 +1,54 @@
+{
+  "overwriteMode": "merge",
+  "nextGenServiceUrl": "http://localhost:8090/api/v2/",
+  "oidcSettings": {
+    "connection": {
+      "issuer": "https://login.microsoftonline.com/c617703f-2718-4b66-bc93-4e68d55edf8c/v2.0",
+      "clientId": "7e2a9ccd-5a55-4a85-8023-1f5f0b9a32e5",
+      "redirectUri": "http://localhost:8080",
+      "scope": "api://c617703f-2718-4b66-bc93-4e68d55edf8c/idabus-api-dev2/General",
+      "responseType": "code",
+      "strictDiscoveryDocumentValidation": false
+    }
+  },
+  "transparentDesign": true,
+  "keepAliveDuration": 0,
+  "keepAliveCheckPeriod": 3600000,
+  "blurLevel": 0,
+  "uiLoader": {
+    "spinnerSize": 40,
+    "spinnerColor": "rgb(5,77,122)",
+    "overlayColor": "rgba(0,0,0,.02)",
+    "progressBarColor": "rgb(5,77,122)"
+  },
+  "systems": {
+    "items": [
+      {},
+      {},
+      {},
+      {
+        "name": "IdabusKeycloak",
+        "displayName": "Idabus Identity Keycloak",
+        "description": "Idabus with Keycloak as identity provider",
+        "config": {
+          "oidcSettings": {
+            "connection": {
+              "issuer": "https://localhost:8443/realms/idabus",
+              "redirectUri": "http://localhost:8080",
+              "clientId": "idabus-app",
+              "responseType": "code",
+              "scope": "openid profile",
+              "showDebugInformation": true,
+              "timeoutFactor": 0.01,
+              "checkOrigin": false,
+              "strictDiscoveryDocumentValidation": false,
+              "customQueryParams": {
+                "audience": "idabus-app"
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

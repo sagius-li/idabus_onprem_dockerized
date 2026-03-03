@@ -1,8 +1,8 @@
 # elasticsearch data
-esdata/
+/esdata/
 
 # sql server data
-sqldata/
+/sqldata/
 
 # environment variables
 .env
@@ -14,17 +14,17 @@ logs/
 cache/
 
 # portal (angular web)
-portal/
+/portal/
 
 # engine (dot net api)
-engine/
+/engine/
 
 # nginx
-nginx/
+/nginx/
 
 # keycloak runtime data
-keycloak/data/
-localfiles/keycloak/
+/keycloak/data/
+/localfiles/keycloak/
 
 # temp
 .DS_Store

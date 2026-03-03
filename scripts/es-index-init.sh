@@ -33,6 +33,9 @@ for index in events eventsarchive resources workflowexecutions; do
           },
           "mappings": {
             "date_detection": false,
+            "properties": {
+              "i__lastupdateticks": {"type": "long"}
+            },
             "dynamic_templates": [
               {
                 "ignore_x_fields": {
@@ -69,6 +72,23 @@ JSON
 )
     if [ "$create_status" != "200" ] && [ "$create_status" != "201" ]; then
       echo "Failed creating index $index (status=$create_status)" >&2
+      exit 1
+    fi
+
+    echo "Applying replica setting for $index, only for dev and single node"
+    settings_status=$(curl -s -o /dev/null -w "%{http_code}" -u elastic:"$ELASTIC_PASSWORD" \
+      -X PUT "http://elasticsearch:9200/$index/_settings" \
+      -H "Content-Type: application/json" \
+      --data-binary @- <<'JSON'
+        {
+          "index": {
+            "number_of_replicas": 0
+          }
+        }
+JSON
+)
+    if [ "$settings_status" != "200" ] && [ "$settings_status" != "201" ]; then
+      echo "Failed applying settings for index $index (status=$settings_status)" >&2
       exit 1
     fi
   else
